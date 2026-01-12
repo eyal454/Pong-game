@@ -78,45 +78,40 @@ public class PongGame extends SurfaceView implements Runnable {
     }
 
     private void update() {
-        // update entities
         paddle.update(fps);
         ball.update(fps);
 
-        // collision
-
-        //  ball hits the Paddle
-        if (RectF.intersects(paddle.getRect(), ball.getRect())) {
-
+        // top and bottom walls
+        if(ball.getRect().top < 0) {
             ball.reverseYVelocity();
-
-            ball.resetY(paddle.getRect().top - ball.getHeight() - 2);
-
-        }
-
-        // ball hits bottom screen (game over)
-        if (ball.getRect().bottom > screenY) {
-            ball.reverseYVelocity();
-            // add here minus 1 life when game over
-            startNewGame();
-        }
-
-        // ball hits top screen
-        if (ball.getRect().top < 0) {
-            ball.reverseYVelocity();
-            // Clear the wall to prevent sticking
             ball.resetY(1);
         }
 
-        // 4. Ball hits Left Wall
-        if (ball.getRect().left < 0) {
-            ball.reverseXVelocity();
-            ball.resetX(1);
+        if (ball.getRect().bottom > screenY) {
+            ball.reverseYVelocity();
+            ball.resetY(screenY - ball.getHeight() - 1);
         }
 
-        // 5. Ball hits Right Wall
+        // left and right walls (game over)
+
+        // ball goes past left side
+        if (ball.getRect().left < 0) {
+            // Player 2 scores!
+            startNewGame();
+        }
+
+        // ball goes past right side
         if (ball.getRect().right > screenX) {
-            ball.reverseXVelocity();
-            ball.resetX(screenX - ball.getWidth() - 1);
+            // Player 1 scores!
+            startNewGame();
+        }
+
+        // --- 3. Paddle Collision ---
+        if (RectF.intersects(paddle.getRect(), ball.getRect())) {
+            ball.reverseXVelocity(); // Bounce horizontally off the side paddle
+
+            // Fix sticking: if it's the left paddle, push ball to the right of it
+            ball.resetX(paddle.getRect().right + 1);
         }
     }
 
