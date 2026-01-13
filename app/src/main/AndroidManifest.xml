@@ -12,16 +12,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Pong_gmae">
         <activity
-            android:name="com.example.pong_gmae.ChooseActivity"
+            android:name=".GameActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
+        <activity
+            android:name=".ChooseActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.pong_gmae.ScoreActivity"
+            android:name=".ScoreActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.pong_gmae.SettingsActivity"
+            android:name=".SettingsActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.pong_gmae.MainActivity"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

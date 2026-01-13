@@ -14,6 +14,9 @@ public class PongGame extends SurfaceView implements Runnable {
     private Thread gameThread = null;
     private SurfaceHolder surfaceHolder;
 
+    private int player1Score = 0;
+    private int player2Score = 0;
+
 
     // volatile means this variable is accessed from different threads
     private volatile boolean playing;
@@ -25,8 +28,10 @@ public class PongGame extends SurfaceView implements Runnable {
     private int screenY;
 
     // game objects
-    private Paddle paddle;
+    private Paddle paddle1; // Human (Left)
+    private Paddle paddle2; // AI (Right)
     private Ball ball;
+
 
 
     private long fps;
@@ -44,8 +49,11 @@ public class PongGame extends SurfaceView implements Runnable {
         paint = new Paint();
 
         // make paddle and ball
-        // paddle is centered at the bottom 100 pixels wide
-        paddle = new Paddle(screenX / 2f, screenY - 50, screenX / 5f, 20, Color.WHITE);
+        // Player 1: Left side
+        paddle1 = new Paddle(50, screenY / 2f, 20, screenY / 4f, Color.WHITE);
+
+        // Player 2 (AI): Right side
+        paddle2 = new Paddle(screenX - 70, screenY / 2f, 20, screenY / 4f, Color.WHITE);
 
         // ball starts in the middle
         ball = new Ball(screenX / 2f, screenY / 2f, 25, Color.WHITE);
@@ -78,97 +86,106 @@ public class PongGame extends SurfaceView implements Runnable {
     }
 
     private void update() {
-        paddle.update(fps);
         ball.update(fps);
+        paddle1.update(fps);
 
-        // top and bottom walls
-        if(ball.getRect().top < 0) {
+        // simple ai logic
+        // If ball is lower than paddle center, move down
+        if (ball.getRect().centerY() > paddle2.getRect().centerY()) {
+            paddle2.setMovementState(1);
+        } else {
+            paddle2.setMovementState(-1);
+        }
+        paddle2.update(fps);
+
+        // collision detection
+
+        // 1. Bounce off Top and Bottom
+        if (ball.getRect().top < 0 || ball.getRect().bottom > screenY) {
             ball.reverseYVelocity();
-            ball.resetY(1);
         }
 
-        if (ball.getRect().bottom > screenY) {
-            ball.reverseYVelocity();
-            ball.resetY(screenY - ball.getHeight() - 1);
+        // 2. Hit Left Paddle (Player 1)
+        if (RectF.intersects(paddle1.getRect(), ball.getRect())) {
+            ball.reverseXVelocity();
+            ball.resetX(paddle1.getRect().right + 1);
+            ball.increaseSpeed();
         }
 
-        // left and right walls (game over)
+        // 3. Hit Right Paddle (AI)
+        if (RectF.intersects(paddle2.getRect(), ball.getRect())) {
+            ball.reverseXVelocity();
+            ball.resetX(paddle2.getRect().left - ball.getWidth() - 1);
+            ball.increaseSpeed();
+        }
 
-        // ball goes past left side
+        // 4. Scoring (Game Over / Reset)
+        if (ball.getRect().left < 0 || ball.getRect().right > screenX) {
+            startNewGame();
+        }
+
+        // Ball goes past Left side (Player 1 missed)
         if (ball.getRect().left < 0) {
-            // Player 2 scores!
+            player2Score++; // AI gets a point
             startNewGame();
         }
 
-        // ball goes past right side
+        // Ball goes past Right side (AI missed)
         if (ball.getRect().right > screenX) {
-            // Player 1 scores!
+            player1Score++; // player gets a point
             startNewGame();
-        }
-
-        // --- 3. Paddle Collision ---
-        if (RectF.intersects(paddle.getRect(), ball.getRect())) {
-            ball.reverseXVelocity(); // Bounce horizontally off the side paddle
-
-            // Fix sticking: if it's the left paddle, push ball to the right of it
-            ball.resetX(paddle.getRect().right + 1);
         }
     }
 
     private void draw() {
-        // Make sure the drawing surface is valid or the app will crash
         if (surfaceHolder.getSurface().isValid()) {
-
-            // Lock the canvas to draw
             canvas = surfaceHolder.lockCanvas();
+            canvas.drawColor(Color.BLACK); // Clear screen
 
-            // Draw Background Color (Black)
-            canvas.drawColor(Color.BLACK); // Clears the screen
-
-            // Draw the Game Objects
-            // We pass the canvas to them so they can draw themselves
-            paddle.draw(canvas);
+            // Draw Game Objects
+            paddle1.draw(canvas);
+            paddle2.draw(canvas);
             ball.draw(canvas);
 
-            // Draw text (Score, FPS, etc)
+            // draw scores
             paint.setColor(Color.WHITE);
-            paint.setTextSize(50);
-            canvas.drawText("FPS: " + fps, 20, 50, paint);
+            paint.setTextSize(100); // Make it big
 
-            // Unlock the canvas to show the image
+            // Player 1 Score (Left Side)
+            canvas.drawText("" + player1Score, screenX / 4f, 150, paint);
+
+            // Player 2 Score (Right Side)
+            canvas.drawText("" + player2Score, (screenX / 4f) * 3, 150, paint);
+
+            // Optional: Draw a dashed center line
+            paint.setStrokeWidth(5);
+            for(int i = 0; i < screenY; i += 50) {
+                canvas.drawLine(screenX / 2f, i, screenX / 2f, i + 25, paint);
+            }
+
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
     }
 
-    // Handle User Input
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
-
-        // Use bitmasking to handle multi-touch correctly
         switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
-
-            // Player touched the screen
             case MotionEvent.ACTION_DOWN:
-
-                // If touch is on the right half of the screen
-                if (motionEvent.getX() > screenX / 2f) {
-                    paddle.setMovementState(1); // Move Right
-                }
-                // If touch is on the left half
-                else {
-                    paddle.setMovementState(-1); // Move Left
+                // If touch is in the top half of the screen, move up
+                if (motionEvent.getY() < screenY / 2f) {
+                    paddle1.setMovementState(-1);
+                } else {
+                    paddle1.setMovementState(1);
                 }
                 break;
 
-            // Player lifted finger
             case MotionEvent.ACTION_UP:
-                paddle.setMovementState(0); // Stop Moving
+                paddle1.setMovementState(0);
                 break;
         }
         return true;
     }
 
-    // Method to pause the thread (called from MainActivity)
     public void pause() {
         playing = false;
         try {
@@ -178,7 +195,6 @@ public class PongGame extends SurfaceView implements Runnable {
         }
     }
 
-    // Method to resume the thread (called from MainActivity)
     public void resume() {
         playing = true;
         gameThread = new Thread(this);

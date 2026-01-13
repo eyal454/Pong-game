@@ -27,6 +27,7 @@ public class Ball extends GameObject{
         rect.top = y;
         rect.right = x + width;
         rect.bottom = y + height;
+
     }
 
     @Override
@@ -57,4 +58,10 @@ public class Ball extends GameObject{
 
     public float getWidth() { return width; }
     public float getHeight() { return height; }
+
+    public void increaseSpeed() {
+        // Increase speed by 10%
+        xVelocity = xVelocity * 1.1f;
+        yVelocity = yVelocity * 1.1f;
+    }
 }

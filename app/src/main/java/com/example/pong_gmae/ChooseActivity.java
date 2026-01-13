@@ -27,7 +27,7 @@ public class ChooseActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        Intent play = new Intent(this, MainActivity.class);
+        Intent play = new Intent(this, GameActivity.class);
         startActivity(play);
     }
 }
