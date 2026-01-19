@@ -1,14 +1,12 @@
 package com.example.pong_gmae;
+
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.RectF;
 
-
-public class Paddle extends GameObject{
-    //(0 = not moving, 1 = right, -1 = left)
+public class Paddle extends GameObject {
+    //(0 = not moving, 1 = down, -1 = up)
     private int movementState = 0;
-    private float speed = 350;
+    private float speed = 500; // Increased speed slightly for better feel
 
     public Paddle(float x, float y, float width, float height, int color) {
         super(x, y, width, height, color);
@@ -17,12 +15,26 @@ public class Paddle extends GameObject{
     @Override
     public void update(long fps) {
         if (movementState != 0) {
-            float newX = x + (movementState * speed / fps);
-            x = newX;
+            // FIX: Change 'x' to 'y' to move Vertically
+            y = y + (movementState * speed / fps);
 
-            rect.left = x;
-            rect.right = x + width;
+            // FIX: Update top/bottom for vertical movement
+            rect.top = y;
+            rect.bottom = y + height;
         }
+    }
+
+    public void moveTo(float newY, float screenY) {
+        // Center the paddle on the finger position
+        y = newY - (height / 2);
+
+        // Prevent paddle from going off the screen
+        if (y < 0) y = 0;
+        if (y + height > screenY) y = screenY - height;
+
+        // Update the hit box
+        rect.top = y;
+        rect.bottom = y + height;
     }
 
     @Override
@@ -33,12 +45,4 @@ public class Paddle extends GameObject{
     public void setMovementState(int state) {
         this.movementState = state;
     }
-
-
-
-
-
-
-
-
 }

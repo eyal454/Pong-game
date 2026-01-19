@@ -4,16 +4,30 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-
+import java.util.Random;
 public class Ball extends GameObject{
     private float xVelocity;
     private float yVelocity;
+    private float baseSpeed = 600;
 
     public Ball(float x, float y, float size, int color) {
         super(x, y, size, size, color);
+        resetBall();
 
-        xVelocity = 200;
-        yVelocity = -200;
+        xVelocity = 600;
+        yVelocity = -600;
+    }
+
+    public void resetBall() {
+        Random random = new Random();
+
+        // Randomly choose 1 or -1 for direction
+        int xDirection = random.nextBoolean() ? 1 : -1;
+        int yDirection = random.nextBoolean() ? 1 : -1;
+
+        // Apply speed to the random direction
+        xVelocity = xDirection * baseSpeed;
+        yVelocity = yDirection * baseSpeed;
     }
 
     @Override

@@ -13,7 +13,6 @@ public abstract class GameObject {
     protected RectF rect;
     protected Paint paint;
 
-
     public GameObject(float x, float y, float width, float height, int color) {
         this.x = x;
         this.y = y;
@@ -25,10 +24,19 @@ public abstract class GameObject {
         rect = new RectF(x, y, x + width, y + height);
     }
 
-
     public RectF getRect() {
         return rect;
     }
+
+    // --- ADD THESE TWO METHODS HERE ---
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+    // ----------------------------------
 
     public abstract void update(long fps);
 
