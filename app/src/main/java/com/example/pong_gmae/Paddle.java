@@ -45,4 +45,11 @@ public class Paddle extends GameObject {
     public void setMovementState(int state) {
         this.movementState = state;
     }
+
+    public void setSpeed(float newSpeed) {
+        this.speed = newSpeed;
+    }
 }
+
+
+

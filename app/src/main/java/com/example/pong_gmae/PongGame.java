@@ -46,6 +46,8 @@ public class PongGame extends SurfaceView implements Runnable {
         // Player 2 (AI - Right)
         paddle2 = new Paddle(screenX - 70, screenY / 2f, 20, screenY / 4f, Color.WHITE);
 
+        paddle2.setSpeed(600);
+
         ball = new Ball(screenX / 2f, screenY / 2f, 25, Color.WHITE);
 
         startNewGame();
@@ -113,8 +115,6 @@ public class PongGame extends SurfaceView implements Runnable {
             // Add a tiny bit of random Y speed so it's not always the same bounce
             Random random = new Random();
             float extraY = random.nextInt(200) - 100; // -100 to 100
-            // (Note: You'll need to make yVelocity protected or add a setter in Ball.java)
-
             ball.increaseSpeed();
         }
 
@@ -171,10 +171,8 @@ public class PongGame extends SurfaceView implements Runnable {
     public boolean onTouchEvent(MotionEvent motionEvent) {
         switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
 
-            // When you touch OR drag your finger
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:
-                // Move Player 1 paddle to the finger's Y position
                 paddle1.moveTo(motionEvent.getY(), screenY);
                 break;
         }
