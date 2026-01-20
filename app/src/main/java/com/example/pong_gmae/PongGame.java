@@ -107,14 +107,18 @@ public class PongGame extends SurfaceView implements Runnable {
             if(ball.getRect().bottom > screenY) ball.resetY(screenY - ball.getHeight());
         }
 
-        // Hit Left Paddle (Player 1)
+        // Hit Left Paddle (Player)
         if (RectF.intersects(paddle1.getRect(), ball.getRect())) {
             ball.reverseXVelocity();
             ball.resetX(paddle1.getRect().right + 1);
 
-            // Add a tiny bit of random Y speed so it's not always the same bounce
-            Random random = new Random();
-            float extraY = random.nextInt(200) - 100; // -100 to 100
+            // - = hit top half, + = hit bottom half
+            float relativeIntersectY = (paddle1.getRect().centerY() - ball.getRect().centerY());
+            float normalizedIntersectY = (relativeIntersectY / (paddle1.getHeight() / 2));
+
+            float bounceAngle = normalizedIntersectY * Math.abs(ball.getxVelocity());
+            ball.setyVelocity(-bounceAngle);
+
             ball.increaseSpeed();
         }
 
@@ -122,6 +126,14 @@ public class PongGame extends SurfaceView implements Runnable {
         if (RectF.intersects(paddle2.getRect(), ball.getRect())) {
             ball.reverseXVelocity();
             ball.resetX(paddle2.getRect().left - ball.getWidth() - 1);
+
+            // Calculate hit position for AI paddle
+            float relativeIntersectY = (paddle2.getRect().centerY() - ball.getRect().centerY());
+            float normalizedIntersectY = (relativeIntersectY / (paddle2.getHeight() / 2));
+
+            float bounceAngle = normalizedIntersectY * Math.abs(ball.getxVelocity());
+            ball.setyVelocity(-bounceAngle);
+
             ball.increaseSpeed();
         }
 

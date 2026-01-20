@@ -78,4 +78,12 @@ public class Ball extends GameObject{
         xVelocity = xVelocity * 1.1f;
         yVelocity = yVelocity * 1.1f;
     }
+
+    public void setyVelocity(float yVelocity) {
+        this.yVelocity = yVelocity;
+    }
+
+    public float getxVelocity() {
+        return xVelocity;
+    }
 }
