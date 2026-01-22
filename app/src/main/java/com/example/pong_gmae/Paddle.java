@@ -6,7 +6,7 @@ import android.graphics.RectF;
 public class Paddle extends GameObject {
     //(0 = not moving, 1 = down, -1 = up)
     private int movementState = 0;
-    private float speed = 500; // Increased speed slightly for better feel
+    private float speed = 500;
 
     public Paddle(float x, float y, float width, float height, int color) {
         super(x, y, width, height, color);

@@ -8,14 +8,14 @@ import java.util.Random;
 public class Ball extends GameObject{
     private float xVelocity;
     private float yVelocity;
-    private float baseSpeed = 600;
+    private float baseSpeed = 700;
 
     public Ball(float x, float y, float size, int color) {
         super(x, y, size, size, color);
         resetBall();
 
-        xVelocity = 600;
-        yVelocity = -600;
+        xVelocity = 700;
+        yVelocity = -700;
     }
 
     public void resetBall() {

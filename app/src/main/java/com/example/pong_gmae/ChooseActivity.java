@@ -12,7 +12,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class ChooseActivity extends AppCompatActivity implements View.OnClickListener {
 
-    View View1;
+    View View1, View2, View3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,13 +21,40 @@ public class ChooseActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_choose);
 
         View1 = findViewById(R.id.View1);
+        View2 = findViewById(R.id.View2);
+        View3 = findViewById(R.id.View3);
         View1.setOnClickListener(this);
+        View2.setOnClickListener(this);
+        View3.setOnClickListener(this);
 
     }
 
     @Override
-    public void onClick(View v) {
-        Intent play = new Intent(this, GameActivity.class);
-        startActivity(play);
+    public void onClick(View view) {
+        if (View1 == view)
+        {
+            Intent intent = new Intent(ChooseActivity.this, GameActivity.class);
+            intent.putExtra("MODE", "CLASSIC");
+            startActivity(intent);
+
+        }
+
+        if (View2 == view)
+        {
+            Intent intent = new Intent(ChooseActivity.this, GameActivity.class);
+            intent.putExtra("MODE", "ENDLESS");
+            startActivity(intent);
+
+        }
+
+        if (View3 == view)
+        {
+            Intent intent = new Intent(ChooseActivity.this, GameActivity.class);
+            intent.putExtra("MODE", "DOUBLE");
+            startActivity(intent);
+
+        }
+
+
     }
 }
