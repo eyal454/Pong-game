@@ -120,16 +120,45 @@ public class PongGame extends SurfaceView implements Runnable {
         if (paddle2.getRect().top < 0) paddle2.y = 0;
         if (paddle2.getRect().bottom > screenY) paddle2.y = screenY - paddle2.getHeight();
 
-        // AI Logic (Tracks the first ball in the list)
+        // AI logic
         if (!balls.isEmpty()) {
-            Ball targetBall = balls.get(0);
-            // In Double mode, maybe target the closest ball?
-            // For now, let's just track the first one to keep it simple.
+            Ball targetBall = null;
+            float maxX = -1; // Start with a very small number
 
-            if (targetBall.getRect().centerY() > paddle2.getRect().centerY() + 10) {
-                paddle2.setMovementState(1);
-            } else if (targetBall.getRect().centerY() < paddle2.getRect().centerY() - 10) {
-                paddle2.setMovementState(-1);
+            // Loop through ALL balls to find the best target
+            for (Ball b : balls) {
+                // Logic:
+                // 1. Is the ball moving towards the AI? (Velocity X > 0)
+                // 2. Is this ball closer to the AI than the last one we checked? (Higher X is closer to right side)
+                if (b.getxVelocity() > 0 && b.getRect().right > maxX) {
+                    maxX = b.getRect().right;
+                    targetBall = b;
+                }
+            }
+
+            // Fallback: If no ball is coming towards AI (all moving left),
+            // just track the ball closest to the center of the screen to stay ready.
+            if (targetBall == null) {
+                // Find closest ball generally
+                float closestDist = Float.MAX_VALUE;
+                for (Ball b : balls) {
+                    float dist = Math.abs(paddle2.getRect().centerX() - b.getRect().centerX());
+                    if (dist < closestDist) {
+                        closestDist = dist;
+                        targetBall = b;
+                    }
+                }
+            }
+
+            // Move the AI paddle towards the identified targetBall
+            if (targetBall != null) {
+                if (targetBall.getRect().centerY() > paddle2.getRect().centerY() + 10) {
+                    paddle2.setMovementState(1); // Move Down
+                } else if (targetBall.getRect().centerY() < paddle2.getRect().centerY() - 10) {
+                    paddle2.setMovementState(-1); // Move Up
+                } else {
+                    paddle2.setMovementState(0); // Stop shaking if aligned
+                }
             }
         }
 
@@ -198,11 +227,22 @@ public class PongGame extends SurfaceView implements Runnable {
     }
 
     private void checkWinCondition() {
+        // Rule: Classic = First to 5
         if (currentMode.equals("CLASSIC")) {
             if (player1Score >= 5 || player2Score >= 5) {
                 isGameOver = true;
             }
         }
+
+        // Rule: Double Ball = First to 10 (Since scoring is faster)
+        else if (currentMode.equals("DOUBLE")) {
+            if (player1Score >= 10 || player2Score >= 10) {
+                isGameOver = true;
+            }
+        }
+
+        // Note: "ENDLESS" mode is handled directly in the update() loop
+        // because it ends immediately when a ball is missed.
     }
 
     private void draw() {
