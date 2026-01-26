@@ -2,6 +2,7 @@ package com.example.pong_gmae;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -18,6 +19,7 @@ public class PongGame extends SurfaceView implements Runnable {
     private SurfaceHolder surfaceHolder;
     private volatile boolean playing;
     private boolean isGameOver = false;
+    private FirebaseManager fbManager;
 
     // Game Objects
     private Paddle paddle1;
@@ -45,6 +47,8 @@ public class PongGame extends SurfaceView implements Runnable {
         this.screenX = x;
         this.screenY = y;
         this.currentMode = mode; // Save the mode chosen by the user
+
+        fbManager = new FirebaseManager();
 
         surfaceHolder = getHolder();
         paint = new Paint();
@@ -206,6 +210,13 @@ public class PongGame extends SurfaceView implements Runnable {
             if (b.getRect().left < 0) {
                 if (currentMode.equals("ENDLESS")) {
                     isGameOver = true; // One miss = Death
+
+                    // 1. Get name from SharedPreferences
+                    SharedPreferences prefs = getContext().getSharedPreferences("PongPrefs", Context.MODE_PRIVATE);
+                    String savedName = prefs.getString("playerName", "Guest");
+
+                    // 2. Send to Firebase using our module!
+                    fbManager.saveScore(savedName, player1Score);
                 } else {
                     player2Score++;
                     checkWinCondition(); // Check if game ended (Classic)
