@@ -27,7 +27,6 @@ public class ScoreActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_score);
 
-        // Inside ScoreActivity.java, in the onCreate method
 
         backButton = findViewById(R.id.backToMenuButton);
 

@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "801653757012",
+    "firebase_url": "https://pong-gmae-default-rtdb.firebaseio.com",
+    "project_id": "pong-gmae",
+    "storage_bucket": "pong-gmae.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:801653757012:android:0b2bf5a14351fb7758c9c1",
+        "android_client_info": {
+          "package_name": "com.example.pong_gmae"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoczjRHq6rsOlTJNSXasje6rfsYAkzRQE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

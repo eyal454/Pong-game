@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -13,46 +12,47 @@ import androidx.core.view.WindowInsetsCompat;
 import android.content.SharedPreferences;
 import android.content.Context;
 import android.widget.EditText;
+import android.widget.Toast;
 
 
-public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
+public class SettingsActivity extends AppCompatActivity {
 
-    Button btnBack;
-    EditText playerName;
-
-    String userInput = playerName.getText().toString();
-
-
+    // 1. Declare variables
+    private EditText playerNameInput;
+    private Button backButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_settings);
 
-        btnBack= findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(this);
+        // 2. Initialize using YOUR EXACT XML IDs
+        playerNameInput = findViewById(R.id.PlayerName); // Matches your XML
+        backButton = findViewById(R.id.btnBack);         // Matches your XML
 
-        playerName = findViewById(R.id.PlayerName);
-
-
-
-
-
-    }
-
-
-
-    @Override
-    public void onClick(View v) {
-
+        // 3. Load the saved name (so the user sees what they typed before)
         SharedPreferences prefs = getSharedPreferences("PongPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit(); // Get the editor
-        editor.putString("playerName", userInput);
-        editor.apply();
-        Intent i = new Intent(this, MainActivity.class);
-        startActivity(i);
+        String existingName = prefs.getString("playerName", "");
+        playerNameInput.setText(existingName);
+
+        // 4. Save and Exit when "Back" is clicked
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nameToSave = playerNameInput.getText().toString();
+
+                if (!nameToSave.isEmpty()) {
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("playerName", nameToSave);
+                    editor.apply(); // Saves the data
+
+                    Toast.makeText(SettingsActivity.this, "Name Saved!", Toast.LENGTH_SHORT).show();
+                }
+
+                // Close Settings and go back to Menu
+                finish();
+            }
+        });
     }
-
-
 }
+
