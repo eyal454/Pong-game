@@ -3,6 +3,7 @@ package com.example.pong_gmae;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 public class ChooseActivity extends AppCompatActivity implements View.OnClickListener {
 
     View View1, View2, View3;
+    Button btnBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +28,8 @@ public class ChooseActivity extends AppCompatActivity implements View.OnClickLis
         View1.setOnClickListener(this);
         View2.setOnClickListener(this);
         View3.setOnClickListener(this);
+        btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(this);
 
     }
 
@@ -53,6 +57,12 @@ public class ChooseActivity extends AppCompatActivity implements View.OnClickLis
             intent.putExtra("MODE", "DOUBLE");
             startActivity(intent);
 
+        }
+
+        if (btnBack == view)
+        {
+            Intent intent = new Intent(ChooseActivity.this, MainActivity.class);
+            startActivity(intent);
         }
 
 

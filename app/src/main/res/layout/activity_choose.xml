@@ -44,4 +44,21 @@
         app:layout_constraintVertical_bias="0.486"
         android:id="@+id/View3"/>
 
+    <Button
+        android:layout_width="130dp"
+        android:layout_height="30dp"
+        android:backgroundTint="#262626"
+        android:fontFamily="@font/font"
+        android:includeFontPadding="false"
+        android:padding="0dp"
+        android:text="Back"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.069"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.958"
+        android:id="@+id/btnBack"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

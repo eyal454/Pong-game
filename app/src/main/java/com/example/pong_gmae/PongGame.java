@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -15,6 +16,7 @@ import java.util.Random;
 
 public class PongGame extends SurfaceView implements Runnable {
 
+    private Typeface retroFont;
     private Thread gameThread = null;
     private SurfaceHolder surfaceHolder;
     private volatile boolean playing;
@@ -52,6 +54,14 @@ public class PongGame extends SurfaceView implements Runnable {
 
         surfaceHolder = getHolder();
         paint = new Paint();
+
+        // This loads the file "font.ttf" from your res/font folder
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            retroFont = context.getResources().getFont(R.font.font);
+        } else {
+            // Fallback for older phones just in case
+            retroFont = androidx.core.content.res.ResourcesCompat.getFont(context, R.font.font);
+        }
 
         // 1. Setup Paddles
         paddle1 = new Paddle(50, screenY / 2f, 20, screenY / 4f, Color.WHITE);
@@ -264,6 +274,7 @@ public class PongGame extends SurfaceView implements Runnable {
             if (isGameOver) {
                 // Setup paint for centered text
                 paint.setColor(Color.WHITE);
+                paint.setTypeface(retroFont);
                 paint.setTextAlign(Paint.Align.CENTER); // THIS IS THE KEY FIX
 
                 // Draw "GAME OVER" in the middle
