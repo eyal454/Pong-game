@@ -13,6 +13,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import java.util.ArrayList;
 import java.util.Random;
+import android.media.AudioAttributes;
+import android.media.SoundPool;
 
 public class PongGame extends SurfaceView implements Runnable {
 
@@ -22,6 +24,13 @@ public class PongGame extends SurfaceView implements Runnable {
     private volatile boolean playing;
     private boolean isGameOver = false;
     private FirebaseManager fbManager;
+
+    // Sound variables
+    private SoundPool soundPool;
+    private int beepID;
+    private int missID;
+    private int winID;
+    private boolean soundsEnabled = true; // Default to true
 
     // Game Objects
     private Paddle paddle1;
@@ -72,6 +81,27 @@ public class PongGame extends SurfaceView implements Runnable {
 
         // 2. Initialize the Ball List
         balls = new ArrayList<>();
+
+        // 1. Initialize SoundPool (The modern way)
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_GAME)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build();
+
+        soundPool = new SoundPool.Builder()
+                .setMaxStreams(5) // How many sounds can play at once
+                .setAudioAttributes(audioAttributes)
+                .build();
+
+        // 2. Load the sounds from res/raw
+        // Make sure your files are actually named 'beep', 'miss', etc.
+        beepID = soundPool.load(context, R.raw.beep, 1);
+        missID = soundPool.load(context, R.raw.miss, 1);
+        winID = soundPool.load(context, R.raw.win, 1);
+
+        // 3. Check Settings (If the user turned sounds off)
+        SharedPreferences prefs = context.getSharedPreferences("PongPrefs", Context.MODE_PRIVATE);
+        soundsEnabled = prefs.getBoolean("sound_switch", true); // We will fix the saving logic later
 
         startNewGame();
     }
@@ -181,9 +211,12 @@ public class PongGame extends SurfaceView implements Runnable {
             Ball b = balls.get(i);
             b.update(fps);
 
+
+
             // 1. Screen Top/Bottom Collision
             if (b.getRect().top < 0 || b.getRect().bottom > screenY) {
                 b.reverseYVelocity();
+                playSound(beepID);
                 if (b.getRect().top < 0) b.resetY(0);
                 if (b.getRect().bottom > screenY) b.resetY(screenY - b.getHeight());
             }
@@ -191,6 +224,7 @@ public class PongGame extends SurfaceView implements Runnable {
             // 2. Player 1 Collision (Radial Bounce)
             if (RectF.intersects(paddle1.getRect(), b.getRect())) {
                 b.reverseXVelocity();
+                playSound(beepID);
                 b.resetX(paddle1.getRect().right + 1);
 
                 float relativeIntersectY = (paddle1.getRect().centerY() - b.getRect().centerY());
@@ -204,6 +238,7 @@ public class PongGame extends SurfaceView implements Runnable {
             // 3. AI Collision (Radial Bounce)
             if (RectF.intersects(paddle2.getRect(), b.getRect())) {
                 b.reverseXVelocity();
+                playSound(beepID);
                 b.resetX(paddle2.getRect().left - b.getWidth() - 1);
 
                 float relativeIntersectY = (paddle2.getRect().centerY() - b.getRect().centerY());
@@ -218,6 +253,7 @@ public class PongGame extends SurfaceView implements Runnable {
 
             // --- Ball went past Player 1 (Left side) ---
             if (b.getRect().left < 0) {
+                playSound(missID);
                 if (currentMode.equals("ENDLESS")) {
                     isGameOver = true; // One miss = Death
 
@@ -238,6 +274,7 @@ public class PongGame extends SurfaceView implements Runnable {
 
             // --- Ball went past AI (Right side) ---
             if (b.getRect().right > screenX) {
+                playSound(winID);
                 player1Score++;
                 checkWinCondition(); // Check if game ended (Classic)
                 b.resetBall();
@@ -245,6 +282,8 @@ public class PongGame extends SurfaceView implements Runnable {
                 b.resetY(screenY / 2f);
             }
         }
+
+
     }
 
     private void checkWinCondition() {
@@ -361,5 +400,12 @@ public class PongGame extends SurfaceView implements Runnable {
         playing = true;
         gameThread = new Thread(this);
         gameThread.start();
+    }
+
+    public void playSound(int soundID) {
+        if (soundsEnabled) {
+            // params: id, leftVol, rightVol, priority, loop, rate
+            soundPool.play(soundID, 1, 1, 0, 0, 1);
+        }
     }
 }
