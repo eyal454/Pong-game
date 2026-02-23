@@ -8,10 +8,10 @@
     tools:context="com.example.pong_gmae.ChooseActivity"
     android:background="#262626">
 
-    <View
+    <ImageView
         android:layout_width="185dp"
         android:layout_height="300dp"
-        android:background="@color/white"
+        android:src="@drawable/classic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.076"
@@ -20,10 +20,10 @@
         app:layout_constraintVertical_bias="0.495"
         android:id="@+id/View1"/>
 
-    <View
+    <ImageView
         android:layout_width="185dp"
         android:layout_height="300dp"
-        android:background="@color/white"
+        android:src="@drawable/endless"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.499"
@@ -32,17 +32,17 @@
         app:layout_constraintVertical_bias="0.495"
         android:id="@+id/View2"/>
 
-    <View
+    <ImageView
+        android:id="@+id/View3"
         android:layout_width="185dp"
         android:layout_height="300dp"
-        android:background="@color/white"
+        android:src="@drawable/two"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.969"
+        app:layout_constraintHorizontal_bias="0.928"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.486"
-        android:id="@+id/View3"/>
+        app:layout_constraintVertical_bias="0.495" />
 
     <Button
         android:layout_width="130dp"
